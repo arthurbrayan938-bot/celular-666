@@ -1,0 +1,422 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CELULAR 666</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#050505;color:white;font-family:Arial;overflow:hidden}
+button{cursor:pointer;color:white;border:0}
+#intro{position:fixed;inset:0;background:#030303;z-index:30;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center}
+.street{position:absolute;bottom:0;width:100%;height:65%;background:linear-gradient(#151515,#020202);clip-path:polygon(35% 0,65% 0,100% 100%,0 100%)}
+.foundPhone{position:absolute;bottom:25%;width:90px;height:165px;background:#080808;border:5px solid #444;border-radius:20px;transform:rotate(-18deg);box-shadow:0 0 25px #650000;animation:pulse 2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 50px red}}
+#introText{position:absolute;top:15%;font-size:18px;color:#ddd;padding:20px}
+#start{position:absolute;bottom:7%;padding:15px 35px;background:#950000;border-radius:12px;font-weight:bold}
+#timer{position:absolute;bottom:2%;color:#777}
+#game{display:none;width:100%;height:100dvh;align-items:center;justify-content:center}
+.phone{width:100%;height:100%;max-width:420px;max-height:900px;background:#080808;position:relative;overflow:hidden}
+@media(min-width:500px){.phone{height:95vh;border:7px solid #333;border-radius:35px}}
+.status{height:30px;padding:7px 20px;display:flex;justify-content:space-between;font-size:12px;position:absolute;top:0;width:100%;z-index:3}
+#lock{position:absolute;inset:0;background:linear-gradient(150deg,#252525,#050505);text-align:center;padding-top:90px}
+.lockTime{font-size:75px;font-weight:200}
+.keypad{display:grid;grid-template-columns:repeat(3,65px);justify-content:center;gap:12px;margin-top:20px}
+.key{height:58px;border-radius:50%;background:#ffffff20;font-size:23px;border:1px solid #ffffff25}
+#passdots{font-size:24px;letter-spacing:10px;margin:20px}
+#lockError{color:red;height:20px}
+#home{display:none;position:absolute;inset:0;padding:55px 20px 25px;background:radial-gradient(ellipse at center,#252525,#050505)}
+.widget{padding:20px;border-radius:20px;background:#ffffff18;margin-top:25px}
+.widget h2{font-size:30px;margin:0}
+.apps{display:grid;grid-template-columns:repeat(4,1fr);gap:23px 8px;margin-top:30px}
+.app{text-align:center;font-size:12px;cursor:pointer}
+.appIcon{width:53px;height:53px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:auto auto 7px;font-size:27px;background:#ffffff24}
+.dock{position:absolute;bottom:25px;left:15px;right:15px;display:flex;justify-content:space-around;padding:13px;background:#ffffff20;border-radius:25px}
+.dock span{font-size:27px;cursor:pointer}
+#home.midnight{background:radial-gradient(ellipse at center,#ff0000,#790000 45%,#080000);animation:redGlitch .4s infinite}
+#home.midnight .widget,#home.midnight .appIcon,#home.midnight .dock{background:#300000;border:1px solid red}
+@keyframes redGlitch{0%{filter:brightness(1)}50%{filter:brightness(.45) contrast(1.8)}100%{filter:brightness(1)}}
+#popup{display:none;position:absolute;inset:0;background:#101010;z-index:8;padding:25px;padding-top:55px;overflow-y:auto}
+#popup h2{font-size:24px}
+.content{margin-top:25px}
+.back{background:#333;padding:12px 25px;border-radius:12px;margin-top:20px}
+#chat,#unknownChat{display:none;position:absolute;inset:0;z-index:12;background:#101b20}
+.chatHeader{height:65px;background:#075e50;display:flex;align-items:center;padding:10px;gap:12px}
+.avatar{width:42px;height:42px;border-radius:50%;background:#ddd;color:#333;display:flex;align-items:center;justify-content:center;font-size:23px}
+.chatBody{height:calc(100% - 65px);padding:15px 10px;overflow-y:auto;background:#0b171b}
+.bubble{max-width:88%;padding:11px 13px;margin-bottom:12px;border-radius:12px;font-size:14px;line-height:1.5}
+.me{background:#005c4b;margin-left:auto}
+.mother{background:#253138;margin-right:auto}
+.time{display:block;text-align:right;font-size:10px;color:#aaa;margin-top:5px}
+.chatDate{text-align:center;color:#ccc;background:#263238;padding:7px;width:max-content;margin:12px auto;border-radius:8px;font-size:12px}
+#unknownBody{height:calc(100% - 150px);padding:15px 10px;overflow-y:auto;background:#0b171b}
+#unknownOptions{padding:12px;background:#101b20}
+#unknownOptions button{background:#075e50;width:100%;padding:16px;border-radius:12px;font-size:14px;text-align:left;line-height:1.5}
+#deathMessage{display:none;position:absolute;inset:0;z-index:20;background:#120000;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:25px}
+#deathMessage h1{color:red;font-size:35px;text-shadow:0 0 20px red}
+.galleryPhoto{width:100%;height:430px;border-radius:12px;background:radial-gradient(ellipse at center,#ff1616,#a00000 40%,#350000 75%,#080000);display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;box-shadow:0 0 30px #900}
+.phoneScreen{max-width:320px;margin:auto;text-align:center}
+.phoneScreen input{width:100%;padding:17px;background:#222;border:1px solid #555;border-radius:12px;color:white;text-align:center;font-size:28px;letter-spacing:8px}
+.dialPad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.dialPad button{height:58px;border-radius:50%;background:#292929;font-size:23px}
+.callButton{background:#087c3b;padding:15px 35px;border-radius:30px;margin-top:20px;font-size:18px}
+#callScreen{display:none;position:absolute;inset:0;z-index:18;background:linear-gradient(#171717,#030303);align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:25px}
+#callScreen h2{font-size:26px}
+#callScreen .callAvatar{font-size:65px;margin:25px}
+#callSubtitle{min-height:100px;font-size:18px;line-height:1.6;color:#ddd}
+#callEnd{background:#a00000;border-radius:30px;padding:15px 30px;margin-top:20px}
+#policeEnding{display:none;position:absolute;inset:0;z-index:19;background:#090000;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:25px}
+#policeEnding h1{color:#f22;text-shadow:0 0 20px red}
+#motherCallButton{margin-left:auto;background:transparent;font-size:25px;padding:5px}
+#motherEnding{display:none;position:absolute;inset:0;z-index:19;background:#080000;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:25px}
+#motherEnding h1{color:#f22;text-shadow:0 0 20px red}
+</style>
+</head>
+<body>
+
+<div id="intro">
+ <div id="introText">23:47 — UMA RUA DESERTA...</div>
+ <div class="street"></div>
+ <div class="foundPhone"></div>
+ <button id="start" onclick="startGame()">ENCONTRAR CELULAR</button>
+ <div id="timer"></div>
+</div>
+
+<div id="game">
+<div class="phone">
+<div class="status">
+ <span id="statusTime">23:47</span>
+ <span>◈ 4G　 Wi-Fi　 ▰</span>
+</div>
+
+<div id="lock">
+ <div style="font-size:40px">🔒</div>
+ <div class="lockTime" id="clock">23:47</div>
+ <p>Digite a senha para desbloquear</p>
+ <div id="passdots">○ ○ ○</div>
+ <div class="keypad">
+  <button class="key" onclick="digit(1)">1</button>
+  <button class="key" onclick="digit(2)">2</button>
+  <button class="key" onclick="digit(3)">3</button>
+  <button class="key" onclick="digit(4)">4</button>
+  <button class="key" onclick="digit(5)">5</button>
+  <button class="key" onclick="digit(6)">6</button>
+  <button class="key" onclick="digit(7)">7</button>
+  <button class="key" onclick="digit(8)">8</button>
+  <button class="key" onclick="digit(9)">9</button>
+  <button class="key" onclick="erase()">⌫</button>
+  <button class="key" onclick="digit(0)">0</button>
+  <button class="key" onclick="checkPass()">✓</button>
+ </div>
+ <div id="lockError"></div>
+</div>
+
+<div id="home">
+ <div>Segunda-feira</div>
+ <div class="widget">
+  <h2 id="homeClock">23:47</h2>
+  <p>Olá, desconhecido.</p>
+  <small>Bem-vindo ao seu aparelho.</small>
+ </div>
+ <div class="apps">
+  <div class="app" onclick="openApp('TikTok')"><div class="appIcon">🎵</div>TikTok</div>
+  <div class="app" onclick="openApp('WhatsApp')"><div class="appIcon">💬</div>WhatsApp</div>
+  <div class="app" onclick="openApp('Instagram')"><div class="appIcon">📸</div>Instagram</div>
+  <div class="app" onclick="openApp('YouTube')"><div class="appIcon">▶️</div>YouTube</div>
+  <div class="app" onclick="openApp('Câmera')"><div class="appIcon">📷</div>Câmera</div>
+  <div class="app" onclick="openApp('Galeria')"><div class="appIcon">🌄</div>Galeria</div>
+  <div class="app" onclick="openApp('Mensagens')"><div class="appIcon">✉️</div>Mensagens</div>
+  <div class="app" onclick="openApp('Conversas')"><div class="appIcon">👤</div>Conversas</div>
+  <div class="app" onclick="openApp('Configurações')"><div class="appIcon">⚙️</div>Config.</div>
+  <div class="app" onclick="openApp('Arquivos')"><div class="appIcon">📁</div>Arquivos</div>
+  <div class="app" onclick="openApp('666.exe')"><div class="appIcon">👁️</div>666.exe</div>
+ </div>
+ <div class="dock">
+  <span onclick="openApp('Telefone')">📞</span>
+  <span onclick="openApp('WhatsApp')">💬</span>
+  <span onclick="openApp('Câmera')">📷</span>
+  <span onclick="openApp('Navegador')">🌐</span>
+ </div>
+</div>
+
+<div id="popup">
+ <h2 id="appTitle"></h2>
+ <div class="content" id="appContent"></div>
+ <button class="back" onclick="closeApp()">← Voltar</button>
+</div>
+
+<!-- WHATSAPP DA MÃE -->
+<div id="chat">
+ <div class="chatHeader">
+  <button onclick="closeChat('chat')" style="background:none;font-size:22px">←</button>
+  <div class="avatar">👩</div>
+  <div style="flex:1"><b>Mãe</b><br><small>online</small></div>
+  <button id="motherCallButton" onclick="startMotherCall()">📞</button>
+ </div>
+ <div class="chatBody">
+  <div class="chatDate">HOJE</div>
+  <div class="bubble me">Mãe vou sair com minhas amigas<span class="time">23:45 ✓✓</span></div>
+  <div class="bubble mother">Filha você não viu no jornal que tinha um monstro à solta da NASA?<span class="time">23:47</span></div>
+  <div class="bubble me">A mãe isso é mentira<span class="time">23:59 ✓✓</span></div>
+  <div class="chatDate">00:00</div>
+  <div class="bubble mother">Filha vem logo<span class="time">00:00 ✓✓ Visto</span></div>
+  <div class="bubble mother">Filha😨<span class="time">00:00</span></div>
+ </div>
+</div>
+
+<div id="unknownChat">
+ <div class="chatHeader">
+  <button onclick="closeChat('unknownChat')" style="background:none;font-size:22px">←</button>
+  <div class="avatar">👤</div>
+  <div><b>Contato desconhecido</b><br><small id="unknownStatus">online</small></div>
+ </div>
+ <div id="unknownBody">
+  <div class="chatDate">HOJE</div>
+  <div class="bubble mother">Olá, como você vai sabendo que esse celular é de uma pessoa morta por mim?<span class="time">23:58</span></div>
+ </div>
+ <div id="unknownOptions">
+  <button onclick="answerUnknown()">Que? Como assim? Eu achei esse celular só na calçada!</button>
+ </div>
+</div>
+
+<div id="deathMessage">
+ <h1>VOCÊ MORRE JÁJÁ...</h1>
+ <p>00:00</p>
+ <p>ELE ESTÁ PROCURANDO VOCÊ.</p>
+ <button class="back" onclick="closeDeath()">CONTINUAR</button>
+</div>
+
+<div id="callScreen">
+ <div style="color:#aaa">CHAMADA FICTÍCIA</div>
+ <div class="callAvatar" id="callAvatar">👮</div>
+ <h2 id="callName">Polícia - 190</h2>
+ <p id="callStatus" style="color:#aaa">Chamando...</p>
+ <div id="callSubtitle">Aguardando atendimento...</div>
+ <button id="callEnd" onclick="endCall()">🔴 Encerrar chamada</button>
+</div>
+
+<div id="policeEnding">
+ <h1>A POLÍCIA DESLIGOU...</h1>
+ <p>NEM A POLÍCIA ACREDITA EM VOCÊ.</p>
+ <button class="back" onclick="closePoliceEnding()">VOLTAR</button>
+</div>
+
+<div id="motherEnding">
+ <h1>A MÃE DESLIGOU...</h1>
+ <p>Ela não consegue acreditar no que acabou de ouvir.</p>
+ <button class="back" onclick="closeMotherEnding()">VOLTAR</button>
+</div>
+
+</div>
+</div>
+
+<script>
+let pass="";
+let midnightTriggered=false;
+let callSpeech=null;
+let callVersion=0;
+
+function startGame(){
+ document.getElementById('start').style.display='none';
+ let texts=[
+ "23:47 — UMA RUA DESERTA...",
+ "Você está andando pela calçada...",
+ "Um celular está abandonado no chão.",
+ "A tela começa a ligar sozinha...",
+ "Uma notificação aparece.",
+ "PROPRIETÁRIO DESCONHECIDO.",
+ "O aparelho está vibrando...",
+ "Algo está escondido nele.",
+ "ELE ESTÁ ACORDADO.",
+ "ABRINDO CELULAR..."
+ ];
+ let count=0;
+ let interval=setInterval(()=>{
+  document.getElementById('introText').innerText=texts[count];
+  document.getElementById('timer').innerText=((count+1)*10)+"%";
+  count++;
+  if(count===10){
+   clearInterval(interval);
+   setTimeout(()=>{
+    document.getElementById('intro').style.display='none';
+    document.getElementById('game').style.display='flex';
+   },500);
+  }
+ },1000);
+}
+
+function digit(n){
+ if(pass.length<3){pass+=n;updateDots()}
+ if(pass.length===3)checkPass();
+}
+function erase(){pass=pass.slice(0,-1);updateDots()}
+function updateDots(){
+ document.getElementById('passdots').innerText="● ".repeat(pass.length)+"○ ".repeat(3-pass.length);
+}
+function checkPass(){
+ if(pass==="666"){
+  document.getElementById('lock').style.display='none';
+  document.getElementById('home').style.display='block';
+ }else{
+  document.getElementById('lockError').innerText="SENHA INCORRETA";
+  pass="";
+  updateDots();
+ }
+}
+
+function openApp(name){
+ if(name==="WhatsApp"){
+  document.getElementById('chat').style.display='block';
+  return;
+ }
+ if(name==="Conversas"){
+  document.getElementById('unknownChat').style.display='block';
+  return;
+ }
+ document.getElementById('popup').style.display='block';
+ document.getElementById('appTitle').innerText=name;
+
+ let messages={
+  TikTok:"Vídeo recomendado: Uma sombra no corredor...",
+  Instagram:"Uma conta chamada @666 começou a seguir você.",
+  YouTube:"Vídeo: O CELULAR QUE ESCONDE UM MONSTRO.",
+  Câmera:"Câmera aberta. Algo parece estar atrás de você...",
+  Galeria:`<h3 style="color:#aaa">IMG_666.png</h3><div class="galleryPhoto"><h1>EU PEGUEI ELA🧌</h1><p>00:00 • IMAGEM DESCONHECIDA</p></div><p style="color:#888;font-size:12px">Arquivo encontrado no dispositivo.</p>`,
+  Mensagens:"DESCONHECIDO: Não deixe ele sair.",
+  Configurações:"Modelo: Android<br>Proprietário: desconhecido<br>Versão: 6.66",
+  Arquivos:"Downloads<br>Fotos<br>MONSTRO",
+  "666.exe":"ARQUIVO DESCONHECIDO<br><br>Você quer descobrir quem está dentro do celular?",
+  Telefone:`<div class="phoneScreen"><p style="color:#aaa">Digite um número</p><input id="phoneNumber" readonly placeholder="Número"><div class="dialPad">${[1,2,3,4,5,6,7,8,9,"*",0,"#"].map(n=>`<button onclick="dialDigit('${n}')">${n}</button>`).join("")}</div><button class="callButton" onclick="makeCall()">📞 LIGAR</button><p style="color:#777;font-size:11px">Chamadas simuladas dentro do jogo.</p></div>`,
+  Navegador:"Sem conexão com a internet."
+ };
+ document.getElementById('appContent').innerHTML=messages[name]||"Aplicativo aberto.";
+ if(name==="666.exe")document.getElementById('appContent').innerHTML+='<br><br><button class="back" onclick="showMonster()">ABRIR ARQUIVO</button>';
+ if(name==="Câmera")document.getElementById('appContent').innerHTML+='<br><br><button class="back" onclick="showMonster()">TIRAR FOTO</button>';
+}
+
+function dialDigit(n){
+ const input=document.getElementById('phoneNumber');
+ if(input&&input.value.length<12)input.value+=n;
+}
+function makeCall(){
+ const number=document.getElementById('phoneNumber').value;
+ if(number==="190")startPoliceCall();
+ else if(number.length)alert("Número indisponível neste celular.");
+ else alert("Digite um número primeiro.");
+}
+function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
+
+function speakLine(text,rate,pitch,version){
+ return new Promise(resolve=>{
+  if(!('speechSynthesis' in window)){resolve();return}
+  window.speechSynthesis.cancel();
+  const utterance=new SpeechSynthesisUtterance(text);
+  utterance.lang="pt-BR";
+  utterance.rate=rate;
+  utterance.pitch=pitch;
+  utterance.onend=resolve;
+  utterance.onerror=resolve;
+  callSpeech=utterance;
+  window.speechSynthesis.speak(utterance);
+ });
+}
+
+function showCall(name,avatar){
+ document.getElementById('callScreen').style.display='flex';
+ document.getElementById('callName').innerText=name;
+ document.getElementById('callAvatar').innerText=avatar;
+ document.getElementById('callStatus').innerText="Chamando...";
+ document.getElementById('callSubtitle').innerText="Chamando...";
+}
+function stopCall(){
+ callVersion++;
+ if('speechSynthesis' in window)window.speechSynthesis.cancel();
+ document.getElementById('callScreen').style.display='none';
+}
+async function startPoliceCall(){
+ const version=++callVersion;
+ document.getElementById('popup').style.display='none';
+ showCall("Polícia - 190","👮");
+ await wait(1800);
+ if(version!==callVersion)return;
+ document.getElementById('callStatus').innerText="Atendida";
+ document.getElementById('callSubtitle').innerText="Polícia: Olá, qual será a denúncia?";
+ await speakLine("Olá, qual será a denúncia?",0.85,0.65);
+ if(version!==callVersion)return;
+ document.getElementById('callSubtitle').innerText="Você: Um cara mandou uma mensagem para mim dizendo que matou uma pessoa e está dizendo que a próxima vai ser eu.";
+ await speakLine("Um cara mandou uma mensagem para mim dizendo que matou uma pessoa e está dizendo que a próxima vai ser eu.",1.05,1.35);
+ if(version!==callVersion)return;
+ document.getElementById('callSubtitle').innerText="Polícia: Isso é uma piada, né?";
+ await speakLine("Isso é uma piada, né?",0.85,0.65);
+ if(version!==callVersion)return;
+ await wait(900);
+ stopCall();
+ document.getElementById('policeEnding').style.display='flex';
+}
+async function startMotherCall(){
+ const version=++callVersion;
+ document.getElementById('chat').style.display='none';
+ showCall("Mãe","👩");
+ await wait(1500);
+ if(version!==callVersion)return;
+ document.getElementById('callStatus').innerText="Atendida";
+ document.getElementById('callSubtitle').innerText="Mãe: Oi, filha! Aonde você tá? Vem para casa!";
+ await speakLine("Oi, filha! Aonde você tá? Vem para casa!",0.85,0.7);
+ if(version!==callVersion)return;
+ document.getElementById('callSubtitle').innerText="Você: Olha, eu não sou sua filha. Chegou uma mensagem de um cara dizendo que ela morreu e a próxima vai ser eu.";
+ await speakLine("Olha, eu não sou sua filha. Chegou uma mensagem de um cara dizendo que ela morreu e a próxima vai ser eu.",1.08,1.35);
+ if(version!==callVersion)return;
+ document.getElementById('callSubtitle').innerText="Mãe: O quê?! Meu Deus! A minha filha morreu! 😭😭";
+ await speakLine("O quê? Meu Deus! A minha filha morreu!",0.9,1.0);
+ if(version!==callVersion)return;
+ await wait(900);
+ stopCall();
+ document.getElementById('motherEnding').style.display='flex';
+}
+function endCall(){
+ stopCall();
+}
+function closePoliceEnding(){document.getElementById('policeEnding').style.display='none'}
+function closeMotherEnding(){document.getElementById('motherEnding').style.display='none'}
+
+function answerUnknown(){
+ const body=document.getElementById('unknownBody');
+ document.getElementById('unknownOptions').style.display='none';
+ body.innerHTML+=`<div class="bubble me">Que? Como assim? Eu achei esse celular só na calçada!<span class="time">23:59 ✓✓</span></div>`;
+ body.scrollTop=body.scrollHeight;
+ document.getElementById('unknownStatus').innerText="digitando...";
+ setTimeout(()=>{
+  body.innerHTML+=`<div class="bubble mother">É... mas não tem mais volta.<br><br>E o próximo vai ser você😂✌️🥀<span class="time">00:00</span></div>`;
+  document.getElementById('unknownStatus').innerText="online";
+  body.scrollTop=body.scrollHeight;
+ },2500);
+}
+function closeChat(id){document.getElementById(id).style.display='none'}
+function closeApp(){document.getElementById('popup').style.display='none'}
+function showMonster(){
+ document.getElementById('popup').style.display='none';
+ document.getElementById('deathMessage').style.display='flex';
+ document.querySelector('#deathMessage h1').innerText="EU ESTOU AQUI";
+ document.querySelector('#deathMessage p:last-of-type').innerText="Você encontrou meu esconderijo.";
+}
+function closeDeath(){document.getElementById('deathMessage').style.display='none'}
+
+function checkMidnight(){
+ let now=new Date();
+ let time=now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
+ document.getElementById('clock').innerText=time;
+ document.getElementById('homeClock').innerText=time;
+ document.getElementById('statusTime').innerText=time;
+ if(now.getHours()===0&&now.getMinutes()===0&&!midnightTriggered){
+  midnightTriggered=true;
+  document.getElementById('home').classList.add('midnight');
+  document.getElementById('deathMessage').style.display='flex';
+  if(navigator.vibrate)navigator.vibrate([500,200,500,200,1000]);
+ }
+}
+checkMidnight();
+setInterval(checkMidnight,1000);
+</script>
+</body>
+</html>
